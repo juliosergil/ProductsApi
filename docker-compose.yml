@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+ postgres:
+   image: postgres:latest
+   environment:
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: coti
+     POSTGRES_DB: bdproductsapi
+   ports:
+     - "5432:5432"
+   networks:
+     - mynetwork
+    
+ mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+     - mynetwork
+ rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5627"
+      - "15672:15672"
+    networks:
+     - mynetwork
+    
+ productsapi:
+     build:
+        context: .
+        dockerfile: Dockerfile
+     ports:
+       - "8082:8082"
+     depends_on:
+       - postgres
+       - mongodb
+       - rabbitmq
+     networks:
+       - mynetwork
+networks:
+   mynetwork:
+     driver: bridge
